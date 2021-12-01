@@ -5,7 +5,10 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 316378e8-c932-478e-8ddd-f55f537c6834
-using IterTools
+begin
+	using IterTools
+	using Chain
+end
 
 # ╔═╡ f4d42087-c55a-4dd8-85f5-9a126d71093a
 md"""
@@ -28,12 +31,12 @@ Inline the example input and read/parse the real input
 example_input = [199,200,208,210,200,207,240,269,260,263]
 
 # ╔═╡ 963a2d47-47b4-43e3-9f92-f2814dc0eeaa
-puzzle_input = begin
-	file_stream = open("inputs/01.txt")
-	raw_string = read(file_stream, String)
-	with_no_trailing_newline = strip(raw_string)
-	strings = split(with_no_trailing_newline, "\n")
-	parse.(Int64, strings)
+puzzle_input = @chain "inputs/01.txt" begin
+	open("r")
+	read(String)
+	strip
+	split("\n")
+	parse.(Int64, _)
 end
 
 # ╔═╡ ec42f95f-7b23-4a7b-a9cc-0fe115e4c736
@@ -48,9 +51,11 @@ Count how many times the depth increases
 Split input into overlapping pairs, find the differences and count the amount of positive results
 """
 function part1(input)
-	pairs = partition(input, 2, 1)
-	differences = Iterators.map(x -> x[2] - x[1], pairs)
-	Iterators.count(x -> x > 0, differences)
+	@chain input begin
+		partition(2, 1)
+		Iterators.map(x -> x[2] - x[1], _)
+		Iterators.count(x -> x > 0, _)
+	end
 end
 
 # ╔═╡ 1efcdf88-3863-4da1-a5dd-6d5aac073243
@@ -68,10 +73,12 @@ md"""
 @doc """
 Split input into overlapping triplets, sum them, then call part 1 to find the increases
 """
-function part2(input::Array{Int64})
-	triples = partition(input, 3, 1)
-	sums = Iterators.map(x -> x[1] + x[2] + x[3], triples)
-	part1(sums)
+function part2(input)
+	@chain input begin
+		partition(3, 1)
+		Iterators.map(x -> x[1] + x[2] + x[3], _)
+		part1()
+	end
 end
 
 # ╔═╡ 088fad0f-bf2b-4e51-abe0-d0c48529e185
@@ -83,9 +90,11 @@ part2(puzzle_input)
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
 IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 
 [compat]
+Chain = "~0.4.8"
 IterTools = "~1.3.0"
 """
 
@@ -95,6 +104,11 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.7.0"
 manifest_format = "2.0"
+
+[[deps.Chain]]
+git-tree-sha1 = "cac464e71767e8a04ceee82a889ca56502795705"
+uuid = "8be319e6-bccf-4806-a6f7-6fae938471bc"
+version = "0.4.8"
 
 [[deps.IterTools]]
 git-tree-sha1 = "05110a2ab1fc5f932622ffea2a003221f4782c18"
@@ -108,7 +122,7 @@ version = "1.3.0"
 # ╠═316378e8-c932-478e-8ddd-f55f537c6834
 # ╟─3e4ddda2-4b9f-4af4-bc29-141e66c71357
 # ╟─18b60aa6-52bd-11ec-17f4-47f0e4792cf7
-# ╟─963a2d47-47b4-43e3-9f92-f2814dc0eeaa
+# ╠═963a2d47-47b4-43e3-9f92-f2814dc0eeaa
 # ╟─ec42f95f-7b23-4a7b-a9cc-0fe115e4c736
 # ╠═944db342-4311-498c-b6f7-8815dc1b4b7d
 # ╠═1efcdf88-3863-4da1-a5dd-6d5aac073243
