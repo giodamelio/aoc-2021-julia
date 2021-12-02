@@ -31,7 +31,7 @@ Inline the example input and read/parse the real input
 example_input = [199,200,208,210,200,207,240,269,260,263]
 
 # ╔═╡ 963a2d47-47b4-43e3-9f92-f2814dc0eeaa
-puzzle_input = @chain "inputs/01.txt" begin
+puzzle_input = @chain "../inputs/01.txt" begin
 	open("r")
 	read(String)
 	strip
